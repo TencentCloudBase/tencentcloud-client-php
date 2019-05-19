@@ -1,0 +1,45 @@
+{
+    "name": "tencentcloudbase/tencentcloud-client-php",
+    "description": "tencentcloud client sdk for php",
+    "keywords": ["tencentcloud", "tencentcloudbase", "TCB"],
+    "homepage": "https://cloud.tencent.com",
+    "type": "library",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "liuyanjie",
+            "email": "lyj8888888888@gmail.com"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/TencentCloudBase/tencentcloud-client-php/issues"
+    },
+    "scripts": {
+        "test": "phpunit -v --configuration tests/phpunit.xml tests",
+        "release": "sh release.sh"
+    },
+    "autoload": {
+        "psr-4": {
+            "TencentCloudClient\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TencentCloudClient\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "ext-json": "^1.7",
+        "php": "^7.3",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.1",
+        "phpunit/php-code-coverage": "^7.0"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "archive": {
+        "exclude": ["build", "tests", "vendor"]
+    }
+}
