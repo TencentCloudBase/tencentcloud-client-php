@@ -37,6 +37,6 @@ class TCClientTest extends TestCase
         );
 
         $this->expectException(TCException::class);
-        $client->request("DescribeEnvss", []);
+        $client->request("NotExistsAction", []);
     }
 }
