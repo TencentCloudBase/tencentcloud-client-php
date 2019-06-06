@@ -19,7 +19,7 @@ namespace TencentCloudClient;
 
 class Version
 {
-    const Version = \"TENCENTCLOUD-CLIENT-PHP_v$@\";
+    const Version = \"TENCENTCLOUD-CLIENT-PHP/v$@\";
 }""" > ${VERSION_FILE}
 
 git add ${VERSION_FILE}
