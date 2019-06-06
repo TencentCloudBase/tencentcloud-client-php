@@ -5,5 +5,5 @@ namespace TencentCloudClient;
 
 class Version
 {
-    const Version = "TENCENTCLOUD-CLIENT-PHP_v1.0.0";
+    const Version = "TENCENTCLOUD-CLIENT-PHP/v1.0.1";
 }
