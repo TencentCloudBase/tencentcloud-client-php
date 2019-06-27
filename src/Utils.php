@@ -5,10 +5,6 @@ namespace TencentCloudClient;
 
 class Utils
 {
-    /**
-     * 获取当前时间戳
-     * @return int
-     */
     static function timestamp()
     {
         $timezone = date_default_timezone_get();
@@ -18,7 +14,12 @@ class Utils
         return $now;
     }
 
-    static function fromArrayToJSONString(array $params)
+    static function HttpDate()
+    {
+        return gmdate('D, d M Y H:i:s T');
+    }
+
+    static function json_encode(array $params)
     {
         if (count($params) == 0) {
             return "{}";
@@ -27,26 +28,25 @@ class Utils
         }
     }
 
-    static function fromJSONStringToArray(string $str, bool $assoc = false)
+    static function json_decode(string $str, bool $assoc = false)
     {
         return json_decode($str, $assoc);
     }
 
-    /**
-     * @param $params
-     * @param bool $filterEmptyQuery
-     * @return string
-     */
-    static function fromArrayToSortedQuerystring($params, $filterEmptyQuery = true)
+    static function xml_decode(string $xmlString, bool $assoc = false)
     {
-        ksort($params);
-        $sortedParams = [];
-        foreach ($params as $key => $value) {
-            if (!empty($value) || !$filterEmptyQuery) {
-                array_push($sortedParams, $key . "=" . $value);
-            }
-        }
-        var_dump($sortedParams);
-        return http_build_query($sortedParams);
+        return json_decode(json_encode(simplexml_load_string($xmlString)), $assoc);
+    }
+
+    public static function key_encode($key) {
+        return str_replace('%2F', '/', rawurlencode($key));
+    }
+
+    public static function key_decode($key) {
+        return rawurldecode($key);
+    }
+
+    public static function key_explode($key) {
+        return explode('/', $key && $key[0] == '/' ? substr($key, 1) : $key);
     }
 }

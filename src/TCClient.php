@@ -105,7 +105,7 @@ class TCClient
             throw new TCException($resp->getBody(), $resp->getReasonPhrase());
         }
 
-        $response = Utils::fromJSONStringToArray($resp->getBody())->Response;
+        $response = Utils::json_decode($resp->getBody()->getContents())->Response;
 
         if (isset($response->Error)) {
             throw new TCException(
@@ -130,7 +130,7 @@ class TCClient
         $headers = [];
         $headers["Content-Type"] = "application/json";
         $querystring = "";
-        $payload = Utils::fromArrayToJSONString($request);
+        $payload = Utils::json_encode($request);
 
         switch ($this->profile->getSignMethod()) {
             case HttpClientProfile::$SIGN_TC3_SHA256:

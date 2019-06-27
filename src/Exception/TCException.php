@@ -18,7 +18,7 @@ class TCException extends \Exception
     /**
      * @var string
      */
-    private $requestId;
+    private $eRequestId;
 
     /**
      * TCException constructor.
@@ -32,7 +32,7 @@ class TCException extends \Exception
 
         $this->eCode = $code;
         $this->eMessage = $message;
-        $this->requestId = $requestId;
+        $this->eRequestId = $requestId;
     }
 
     /**
@@ -44,5 +44,20 @@ class TCException extends \Exception
             " Code: " . $this->eCode . PHP_EOL .
             " Message: ".$this->eMessage . PHP_EOL .
             " RequestId: ".$this->requestId . PHP_EOL;
+    }
+
+    public function getECode()
+    {
+        return $this->eCode;
+    }
+
+    public function getEMessage()
+    {
+        return $this->eMessage;
+    }
+
+    public function getERequestId()
+    {
+        return $this->eRequestId;
     }
 }

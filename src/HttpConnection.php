@@ -18,10 +18,12 @@ class HttpConnection
      */
     private $profile;
 
-    function __construct($url, $clientProfile)
+    function __construct(string $url, HttpClientProfile $clientProfile, array $options = [])
     {
         $this->profile = $clientProfile;
-        $this->client = new Client(["base_uri" => $url]);
+        $this->client = new Client([
+            "base_uri" => $url
+        ]);
     }
 
     private function getOptions()
@@ -35,5 +37,9 @@ class HttpConnection
     {
         return $this->client->post($uri, array_merge($this->getOptions(), $options));
     }
-}
 
+    public function request(string $method, string $uri = '', array $options = [])
+    {
+        return $this->client->request($method, $uri = '', $options);
+    }
+}

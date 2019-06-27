@@ -11,4 +11,8 @@ class Config
 
     public static $secretId = "";
     public static $secretKey = "";
+
+    public static $appId = "";
+    public static $region = "";
+    public static $bucket = "";
 }
