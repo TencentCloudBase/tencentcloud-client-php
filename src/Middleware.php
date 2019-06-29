@@ -99,7 +99,11 @@ class Middleware
             return function (RequestInterface $request, array $options) use ($handler) {
                 $body = $request->getBody();
                 if ($body && $body->getSize() > 0) {
-                    return $handler($request->withHeader("Content-MD5", base64_encode(md5($body->getContents()))), $options);
+                    return $handler($request->withHeader(
+                        "Content-MD5",
+                        base64_encode(md5($body->getContents()))),
+                        $options
+                    );
                 }
                 return $handler($request, $options);
             };

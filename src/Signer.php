@@ -17,11 +17,26 @@ class Signer
         $this->credential = $credential;
     }
 
+    /**
+     * @param $secretKey
+     * @param $signStr
+     * @param $signMethod
+     *
+     * @return string
+     */
     public static function sign($secretKey, $signStr, $signMethod)
     {
         return base64_encode(hash_hmac(Signer::$signMethodMap[$signMethod], $signStr, $secretKey, true));
     }
 
+    /**
+     * @param $secretKey
+     * @param $date
+     * @param $service
+     * @param $str2sign
+     *
+     * @return string
+     */
     public static function signTC3($secretKey, $date, $service, $str2sign)
     {
         $dateKey = hash_hmac("SHA256", $date, "TC3".$secretKey, true);
@@ -30,6 +45,15 @@ class Signer
         return hash_hmac("SHA256", $str2sign, $requestKey);
     }
 
+    /**
+     * @param string $method
+     * @param string $path
+     * @param array $headers
+     * @param array $parameters
+     * @param array $options
+     *
+     * @return string
+     */
     public function calcCosRequestAuthorization(
         string $method,
         string $path,
@@ -47,6 +71,14 @@ class Signer
         );
     }
 
+    /**
+     * @param string $method
+     * @param string $host
+     * @param string $path
+     * @param string $expires
+     *
+     * @return string
+     */
     public function calcCosObjectUrlAuthorization(
         string $method,
         string $host,
@@ -62,6 +94,16 @@ class Signer
         );
     }
 
+    /**
+     * @param string $method
+     * @param string $path
+     * @param HttpParameter $headerParameter
+     * @param HttpParameter $queryParameter
+     * @param string $expires
+     * @param array $options
+     *
+     * @return string
+     */
     private function calcCosAuthorization(
         string $method,
         string $path,

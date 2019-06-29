@@ -43,19 +43,28 @@ class TCException extends \Exception
         return __CLASS__ . PHP_EOL .
             " Code: " . $this->eCode . PHP_EOL .
             " Message: ".$this->eMessage . PHP_EOL .
-            " RequestId: ".$this->requestId . PHP_EOL;
+            " RequestId: ".$this->eRequestId . PHP_EOL;
     }
 
+    /**
+     * @return string
+     */
     public function getECode()
     {
         return $this->eCode;
     }
 
+    /**
+     * @return string
+     */
     public function getEMessage()
     {
         return $this->eMessage;
     }
 
+    /**
+     * @return string
+     */
     public function getERequestId()
     {
         return $this->eRequestId;

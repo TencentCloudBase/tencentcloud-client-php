@@ -49,4 +49,51 @@ class Utils
     public static function key_explode($key) {
         return explode('/', $key && $key[0] == '/' ? substr($key, 1) : $key);
     }
+
+    public static function firstChar(string $str)
+    {
+        return substr($str,0, 1);
+    }
+
+    public static function lastChar(string $str)
+    {
+
+        return substr($str,-1);
+    }
+
+    public static function prefix_valid(string $str)
+    {
+        // $prefix: src/models/index.js
+        // $prefix: src/models/
+        $valid = true;
+        if ($str !== '') {
+            if (static::firstChar($str) === '/') {
+                $valid = false;
+            }
+            if (static::lastChar($str) !== '/') {
+                $valid = false;
+            }
+            if (strpos($str, '//') !== false) {
+                $valid = false;
+            }
+        }
+        return $valid;
+    }
+
+    public static function key_valid(string $str)
+    {
+        // $prefix: src/models/index.js
+        // $prefix: src/models/
+        $valid = true;
+        if (static::firstChar($str) === '/') {
+            $valid = false;
+        }
+        if (static::lastChar($str) === '/') {
+            $valid = false;
+        }
+        if (strpos($str, '//') !== false) {
+            $valid = false;
+        }
+        return $valid;
+    }
 }

@@ -4,6 +4,7 @@
 namespace TencentCloudClient;
 
 
+use Exception;
 use function GuzzleHttp\choose_handler;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
@@ -12,7 +13,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use TencentCloudClient\Exception\TCException;
 use TencentCloudClient\Http\HttpClientProfile;
 
-const COMMON_FILTERD_HEADERS = [
+const COMMON_FILTER_HEADERS = [
     "Content-Length" => true,
     "Content-Type" => true,
     "Connection" => true,
@@ -30,14 +31,14 @@ class TCCosClient
     public static $SDK_VERSION = Version::Version;
 
     /**
-     * @var string sdk版本号
-     */
-    private $sdkVersion;
-
-    /**
      * @var integer http响应码200
      */
     public static $HTTP_RSP_OK = 200;
+
+    /**
+     * @var string sdk版本号
+     */
+    private $sdkVersion;
 
     /**
      * @var Credential 凭证类实例，保存认证相关字段
@@ -53,11 +54,22 @@ class TCCosClient
      * @var string 产品地域
      */
     private $region;
+
+    /**
+     * @var string
+     */
     private $bucket;
 
+    /**
+     * @var string
+     */
     private $appId = "";
 
+    /**
+     * @var string
+     */
     private $endpoint = "";
+
     /**
      * @var Client
      */
@@ -67,6 +79,7 @@ class TCCosClient
      * @var Signer
      */
     private $signer = null;
+
     /**
      * @param $sdkVersion
      */
@@ -141,7 +154,7 @@ class TCCosClient
      */
     public function request(string $method, string $url, array $options = [])
     {
-        $response = $this->pureRequest($method, Utils::key_encode($url), $options);
+        $response = $this->pureRequest($method, $url, $options);
 
         $headers = $response->getHeaders();
         $body = $response->getBody();
@@ -149,14 +162,19 @@ class TCCosClient
         if ($body->getSize() > 0
             && (isset($headers['Content-Type'])
                 && $headers['Content-Type'][0] == 'application/xml')) {
-            
-            $data = Utils::xml_decode($body->getContents(), false);
-            if (isset($data->Code)) {
-                throw new TCException(
-                    $data->Message,
-                    $data->Code,
-                    $data->RequestId
-                );
+
+            if (array_key_exists("contentDecode", $options)) {
+                $data = $options["contentDecode"]($response);
+            }
+            else {
+                $data = Utils::xml_decode($body->getContents(), false);
+                if (isset($data->Code)) {
+                    throw new TCException(
+                        $data->Message,
+                        $data->Code,
+                        $data->RequestId
+                    );
+                }
             }
         }
         else {
@@ -167,7 +185,7 @@ class TCCosClient
 
         $filteredHeaders = [];
         foreach ($headers as $header => $value) {
-            if (!array_key_exists($header, COMMON_FILTERD_HEADERS)) {
+            if (!array_key_exists($header, COMMON_FILTER_HEADERS)) {
                 $filteredHeaders[$header] = join(";", $headers[$header]);
             }
         }
@@ -180,12 +198,35 @@ class TCCosClient
     }
 
     /**
+     * @param string $method
+     * @param string $key
+     * @param array $options
+     *
+     * @return object
+     * @throws GuzzleException
+     * @throws TCException
+     * @throws Exception
+     */
+    public function operateObject(string $method, string $key, array $options = [])
+    {
+        if (!Utils::key_valid($key)) {
+            throw new Exception("InvalidKey: $key");
+        }
+        return $this->request($method, "/".Utils::key_encode($key), $options);
+    }
+
+    /**
      * @param string $key
      * @param string $cdn
      * @param string $expires
+     *
      * @return string
+     * @throws Exception
      */
     public function calcObjectUrl(string $key, string $cdn = "", string $expires = TEN_MINUTES) {
+        if (!Utils::key_valid($key)) {
+            throw new Exception("InvalidKey: $key");
+        }
         $host = !empty($cdn) ? $cdn : $this->endpoint;
         $auth = $this->signer->calcCosObjectUrlAuthorization(
             "GET",

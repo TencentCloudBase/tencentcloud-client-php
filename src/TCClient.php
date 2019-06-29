@@ -170,6 +170,13 @@ class TCClient
         return $headers;
     }
 
+    /**
+     * @param $headers
+     * @param $querystring
+     * @param $payload
+     *
+     * @return string
+     */
     private function calcTC3Authorization($headers, $querystring, $payload)
     {
         $endpoint = $this->profile->getHttpProfile()->getEndpoint();
@@ -221,6 +228,9 @@ class TCClient
         return $authorization;
     }
 
+    /**
+     * @return HttpConnection
+     */
     private function createHTTPConnection()
     {
         return new HttpConnection(
@@ -228,6 +238,9 @@ class TCClient
             $this->profile);
     }
 
+    /**
+     * @return string
+     */
     private function getUrl()
     {
         return $this->profile->getHttpProfile()->getProtocol()
