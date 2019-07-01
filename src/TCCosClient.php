@@ -167,6 +167,7 @@ class TCCosClient
                 $data = $options["contentDecode"]($response);
             }
             else {
+//                echo $body->getContents(), PHP_EOL;
                 $data = Utils::xml_decode($body->getContents(), false);
                 if (isset($data->Code)) {
                     throw new TCException(
@@ -224,7 +225,7 @@ class TCCosClient
      * @throws Exception
      */
     public function calcObjectUrl(string $key, string $cdn = "", string $expires = TEN_MINUTES) {
-        if (!Utils::key_valid($key)) {
+        if (!Utils::key_is_real($key)) {
             throw new Exception("InvalidKey: $key");
         }
         $host = !empty($cdn) ? $cdn : $this->endpoint;

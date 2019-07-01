@@ -65,12 +65,10 @@ class Utils
     {
         // $prefix: src/models/index.js
         // $prefix: src/models/
+        // $prefix: src/models
         $valid = true;
         if ($str !== '') {
             if (static::firstChar($str) === '/') {
-                $valid = false;
-            }
-            if (static::lastChar($str) !== '/') {
                 $valid = false;
             }
             if (strpos($str, '//') !== false) {
@@ -80,20 +78,50 @@ class Utils
         return $valid;
     }
 
+    /**
+     * @param string $str
+     *
+     * @return bool
+     */
     public static function key_valid(string $str)
     {
-        // $prefix: src/models/index.js
-        // $prefix: src/models/
         $valid = true;
         if (static::firstChar($str) === '/') {
-            $valid = false;
-        }
-        if (static::lastChar($str) === '/') {
             $valid = false;
         }
         if (strpos($str, '//') !== false) {
             $valid = false;
         }
         return $valid;
+    }
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public static function key_is_real(string $key)
+    {
+        return static::key_valid($key) && static::lastChar($key) !== '/';
+    }
+
+    /**
+     * @param string $prefix
+     * @param string $key
+     *
+     * @return string
+     */
+    public static function key_join(string $prefix, string $key)
+    {
+        $fullKey = $key;
+        if ($prefix !== '') {
+            if (static::lastChar($prefix) === '/') {
+                $fullKey = "$prefix$key";
+            }
+            else {
+                $fullKey ="$prefix/$key";
+            }
+        }
+        return $fullKey;
     }
 }
