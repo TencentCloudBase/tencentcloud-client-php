@@ -18,7 +18,3 @@ $client = new TCClient(
 
 $result = $client->request("DescribeEnvs");
 ```
-
-## Release
-
-
