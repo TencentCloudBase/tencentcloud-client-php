@@ -46,6 +46,64 @@ class Signer
     }
 
     /**
+     * @param $method
+     * @param $endpoint
+     * @param $path
+     * @param $headers
+     * @param $querystring
+     * @param $payload
+     *
+     * @return string
+     */
+    public function calcTC3Authorization($method, $endpoint, $path, $headers, $querystring, $payload)
+    {
+        $timestamp = $headers["X-TC-Timestamp"];
+
+        $canonicalUri = $path;
+        $canonicalHeaders =
+            "content-type:" . $headers["Content-Type"] . "\n" .
+            "host:" . $headers["Host"] . "\n";
+        $signedHeaders = "content-type;host";
+        $payloadHash = hash("SHA256", $payload);
+
+        // 1. 拼接规范请求串
+        $canonicalRequest =
+            $method . "\n" .
+            $canonicalUri . "\n" .
+            $querystring . "\n" .
+            $canonicalHeaders . "\n" .
+            $signedHeaders . "\n" .
+            $payloadHash;
+
+        $date = date("Y-m-d", $timestamp);
+        $service = explode(".", $endpoint)[0];
+
+        $algorithm = "TC3-HMAC-SHA256";
+        $credentialScope = $date . "/" . $service . "/" . "tc3_request";
+        $hashedCanonicalRequest = hash("SHA256", $canonicalRequest);
+
+        // 2. 拼接待签名字符串
+        $stringToSign =
+            $algorithm . "\n" .
+            $timestamp . "\n" .
+            $credentialScope . "\n" .
+            $hashedCanonicalRequest;
+
+        // 3. 计算签名
+        $secretKey = $this->credential->getSecretKey();
+        $signature = Signer::signTC3($secretKey, $date, $service, $stringToSign);
+
+        // 4. 拼接 Authorization
+        $secretId = $this->credential->getSecretId();
+        $authorization =
+            "$algorithm Credential=$secretId/$credentialScope" . ", " .
+            "SignedHeaders=$signedHeaders" . ", " .
+            "Signature=$signature";
+
+        return $authorization;
+    }
+
+    /**
      * @param string $method
      * @param string $path
      * @param array $headers

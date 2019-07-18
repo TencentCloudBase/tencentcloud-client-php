@@ -120,7 +120,7 @@ class TCCosClient
 
         $handler->push(Middleware::addHostHeader());
         $handler->push(Middleware::addDateHeader());
-        $handler->push(Middleware::addUserAgentHeader(""));
+        $handler->push(Middleware::addUserAgentHeader($this->sdkVersion));
         $handler->push(Middleware::addContentLengthLengthHeader());
         // $handler->push(Middleware::encodePath());
         // $handler->push(Middleware::addContentMD5Header());
