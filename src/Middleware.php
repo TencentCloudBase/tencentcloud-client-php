@@ -5,9 +5,84 @@ namespace TencentCloudClient;
 
 use Closure;
 use Psr\Http\Message\RequestInterface;
+use TencentCloudClient\Exception\TCException;
+use TencentCloudClient\Http\HttpClientProfile;
 
 class Middleware
 {
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return Closure
+     */
+    static function addHeader(string $key, string $value)
+    {
+        return function (callable $handler) use ($key, $value) {
+            return function (RequestInterface $request, array $options) use ($handler, $key, $value) {
+                return $handler(
+                    $request->withHeader($key, $value),
+                    $options
+                );
+            };
+        };
+    }
+    /**
+     *
+     * @return Closure
+     */
+    static function addTCTimestampHeader()
+    {
+        return function (callable $handler) {
+            return function (RequestInterface $request, array $options) use ($handler) {
+                return $handler(
+                    $request->withHeader("X-TC-Timestamp", Utils::timestamp()),
+                    $options
+                );
+            };
+        };
+    }
+
+    /**
+     * @param $signer
+     * @param $signMethod
+     * @return Closure
+     */
+    static function addTC3AuthorizationHeader(Signer $signer, string $signMethod)
+    {
+        return function (callable $handler) use ($signer, $signMethod) {
+            return function (RequestInterface $request, array $options) use ($handler, $signer, $signMethod) {
+                $headers = [];
+                foreach ($request->getHeaders() as $header => $value) {
+                    $headers[$header] = join(";", $request->getHeaders()[$header]);
+                }
+
+                switch ($signMethod) {
+                    case HttpClientProfile::$SIGN_TC3_SHA256:
+                        $authorization = $signer->calcTC3Authorization(
+                            $request->getMethod(),
+                            $request->getUri()->getHost(),
+                            $request->getUri()->getPath(),
+                            $headers,
+                            $request->getUri()->getQuery(),
+                            $request->getBody()->getContents()
+                        );
+                        break;
+                    case HttpClientProfile::$SIGN_HMAC_SHA256:
+                    case HttpClientProfile::$SIGN_HMAC_SHA1:
+                    default:
+                        throw new TCException("UNSUPPORTED_SIGN_METHOD");
+                        break;
+                }
+
+                return $handler(
+                    $request->withHeader("Authorization", $authorization),
+                    $options
+                );
+            };
+        };
+    }
+
     /**
      * @return Closure
      */
