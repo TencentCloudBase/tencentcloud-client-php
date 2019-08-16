@@ -75,7 +75,7 @@ class Signer
             $signedHeaders . "\n" .
             $payloadHash;
 
-        $date = date("Y-m-d", $timestamp);
+        $date = gmdate("Y-m-d", $timestamp);
         $service = explode(".", $endpoint)[0];
 
         $algorithm = "TC3-HMAC-SHA256";
