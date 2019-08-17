@@ -7,11 +7,7 @@ class Utils
 {
     static function timestamp()
     {
-        $timezone = date_default_timezone_get();
-        date_default_timezone_set("UTC");
-        $now = time();
-        date_default_timezone_set($timezone);
-        return $now;
+        return time();
     }
 
     static function HttpDate()
